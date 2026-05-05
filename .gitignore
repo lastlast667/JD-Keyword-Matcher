@@ -1,36 +1,82 @@
-# PyCharm IDE 配置（必须忽略）
+# ========== IDE / 编辑器 ==========
 .idea/
 *.iml
 *.iws
 *.ipr
+.vscode/
+*.swp
+*.swo
 
-# Python 编译缓存（必须忽略）
+# ========== Python ==========
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
 
-# 虚拟环境（必须忽略）
+# ========== 虚拟环境 ==========
 venv/
 env/
 .venv/
 ENV/
+env.bak/
+venv.bak/
 
-# 日志文件
+# ========== 数据文件（核心！） ==========
+# 忽略所有 JSON/CSV（爬取的数据、清洗后的数据）
+*.json
+*.csv
+*.xlsx
+*.xls
+
+# 但是保留目录占位文件，确保空目录能提交
+!.gitkeep
+
+# 显式保留项目必须的文本文件
+!requirements.txt
+!README.md
+
+# 保留停用词表（如果有的话）
+!stopwords.txt
+
+# ========== 模型文件（核心！） ==========
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.pth
+*.onnx
+*.model
+model/              # 训练好的模型目录（如果你创建了的话）
+
+# ========== Jupyter ==========
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ========== 爬虫敏感文件 ==========
+*.cookies.json
+*cookies*.json
+data/boss_cookies.json
+
+# ========== 日志与临时文件 ==========
 *.log
-
-# 系统文件（必须忽略）
+logs/
+tmp/
+temp/
+*.tmp
 .DS_Store
 Thumbs.db
 
-# 临时文件/数据文件（按需忽略）
-*.csv
-!data/house_sales.csv
-*.sql
-*.txt
-!requirements.txt
+# ========== 环境配置 ==========
+.env
+.env.local
+.env.*.local
+
+# ========== 压缩包 ==========
 *.zip
 *.rar
 *.7z
+*.tar.gz
 
-# 环境变量配置
-.env
+# ========== 操作系统 ==========
+desktop.ini
