@@ -24,7 +24,6 @@ venv.bak/
 
 # ========== 数据文件（核心！） ==========
 # 忽略所有 JSON/CSV（爬取的数据、清洗后的数据）
-*.json
 *.csv
 *.xlsx
 *.xls
@@ -40,7 +39,6 @@ venv.bak/
 !stopwords.txt
 
 # ========== 模型文件（核心！） ==========
-*.pkl
 *.joblib
 *.h5
 *.pt
