@@ -97,7 +97,8 @@ with st.sidebar:
         if uploaded:
             resume_text = uploaded.read().decode("utf-8")
 
-    analyze_btn = st.button("🔍 开始分析", type="primary", width='stretch')
+    # FIX: st.button 没有 width 参数，改用 use_container_width
+    analyze_btn = st.button("🔍 开始分析", type="primary", use_container_width=True)
 
     st.divider()
     st.info("""
@@ -128,7 +129,10 @@ if analyze_btn and resume_text.strip():
         with col2:
             st.caption(f"类别: {m['category']}")
         with col3:
-            st.progress(min(m["similarity"] * 3, 1.0), text=f"相似度: {m['similarity']:.2%}")
+            sim = m["similarity"]
+            # FIX: st.progress 不使用 text 参数，避免 Streamlit Cloud 兼容性问题
+            st.progress(min(sim * 3, 1.0))
+            st.caption(f"相似度: {sim:.2%}")
         st.caption(f"[查看详情]({m['url']})")
 
     # 主区域3：技能缺口分析
@@ -152,14 +156,28 @@ st.divider()
 st.subheader("5️⃣ 模型评估指标")
 metrics = load_model_metrics()
 df_metrics = pd.DataFrame(metrics).T
-st.dataframe(df_metrics.style.highlight_max(axis=0, color="green"), width='stretch')
+# FIX: 不使用 width='stretch'，同时避免直接传入 Styler 对象
+# 方案A：直接展示 DataFrame（推荐，Cloud 兼容性最好）
+st.dataframe(df_metrics)
+# 方案B（如果你一定要高亮，用 html table 替代）
+# st.markdown(df_metrics.style.highlight_max(axis=0, color="green").to_html(), unsafe_allow_html=True)
 
 # 主区域4：各类别核心技能词云
 st.subheader("4️⃣ 各类别核心技能词云")
 cat_freqs = load_category_word_frequencies()
-cols = st.columns(3)
-for idx, (cat, freqs) in enumerate(cat_freqs.items()):
-    with cols[idx % 3]:
-        st.caption(f"**{cat}**")
-        img = generate_wordcloud(cat, freqs)
-        st.image(img, width='stretch')
+
+# FIX: 用列表+cols动态渲染，避免最后一行空列导致 DOM 不匹配
+if cat_freqs:
+    cat_items = list(cat_freqs.items())
+    n_cats = len(cat_items)
+    cols_per_row = 3
+
+    for row_start in range(0, n_cats, cols_per_row):
+        row_cats = cat_items[row_start : row_start + cols_per_row]
+        cols = st.columns(cols_per_row)
+        for col_idx, (cat, freqs) in enumerate(row_cats):
+            with cols[col_idx]:
+                st.caption(f"**{cat}**")
+                img = generate_wordcloud(cat, freqs)
+                # FIX: 不使用 width='stretch'，改用 use_container_width
+                st.image(img, use_container_width=True)
